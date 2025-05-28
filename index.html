@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jackson Executor 2018 - Web UI</title>
+<style>
+  body {
+    background-color: #000;
+    color: #39ff14;
+    font-family: Consolas, monospace;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  header {
+    background: #111;
+    padding: 10px 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 1px solid #39ff14;
+  }
+  textarea {
+    flex: 1;
+    background: #000;
+    color: #39ff14;
+    border: none;
+    padding: 15px;
+    font-size: 1.1rem;
+    resize: none;
+    outline: none;
+  }
+  footer {
+    background: #111;
+    padding: 10px 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  button {
+    background: #222;
+    color: #39ff14;
+    border: 1px solid #39ff14;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  button:hover {
+    background: #39ff14;
+    color: #000;
+  }
+  #status {
+    margin-top: 5px;
+    text-align: center;
+    font-size: 0.9rem;
+    min-height: 1.2rem;
+  }
+</style>
+</head>
+<body>
+
+<header>Jackson Executor 2018 - Web UI</header>
+
+<textarea id="scriptBox" placeholder="Paste your Lua script here..."></textarea>
+
+<footer>
+  <button id="executeBtn">Execute</button>
+  <button id="clearBtn">Clear</button>
+</footer>
+
+<div id="status"></div>
+
+<script>
+  const executeBtn = document.getElementById('executeBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const scriptBox = document.getElementById('scriptBox');
+  const statusDiv = document.getElementById('status');
+
+  executeBtn.addEventListener('click', async () => {
+    const script = scriptBox.value.trim();
+    if (!script) {
+      statusDiv.textContent = "Please paste a script before executing.";
+      return;
+    }
+
+    statusDiv.textContent = "Sending script...";
+
+    try {
+      // Replace with your local exploit server URL:
+      // The default for WeAreDevs API HTTP server is usually http://127.0.0.1:6463/execute
+      // Adjust endpoint if needed.
+      const response = await fetch('http://127.0.0.1:6463/execute', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ script })
+      });
+
+      if (response.ok) {
+        statusDiv.textContent = "Script executed successfully!";
+      } else {
+        const text = await response.text();
+        statusDiv.textContent = `Error executing script: ${text}`;
+      }
+    } catch (err) {
+      statusDiv.textContent = "Failed to connect to exploit server. Is it running?";
+    }
+  });
+
+  clearBtn.addEventListener('click', () => {
+    scriptBox.value = '';
+    statusDiv.textContent = '';
+  });
+</script>
+
+</body>
+</html>
